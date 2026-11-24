@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>임신 주수별 산전검사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE everyday, tender: calm, few hues, air
+   IDEA a mother-and-baby handbook (산모수첩) page that turns by itself, week by week
+   PICTURE a large womb circle where the baby grows with the week, big week number; a 40-week ribbon below with the visit rhythm
+   COLOUR warm white ground, deep plum ink, coral accent, peach support, sage for the visit-rhythm band
+   TYPE Gowun Dodum for display, IBM Plex Sans KR for text
+   LAYOUT laptop: circle left, scene card right, ribbon full width under both; phone: title, circle, card, ribbon, controls */
+:root{color-scheme:light dark;--bg:light-dark(#fffaf7,#1d1419);--ink:light-dark(#2b1d2a,#f6ece9);--soft:light-dark(#6d5868,#c9b5bf);--coral:light-dark(#ef5f52,#ff7d70);--peach:light-dark(#ffe2d6,#4a2b2f);--peach2:light-dark(#fff0ea,#2e1e24);--sage:light-dark(#cfe3d6,#2f4a3b);--sage2:light-dark(#a9cdb6,#3f6650);--sage3:light-dark(#7fb394,#56876a);--line:light-dark(#efdcd4,#3d2c33);--card:light-dark(#ffffff,#26191f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans KR",system-ui,sans-serif;overflow-x:clip}
+.band{padding-block:clamp(24px,4vw,52px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font:400 clamp(30px,4.4vw,46px)/1.1 "Gowun Dodum",sans-serif;letter-spacing:-.02em;margin:0 0 6px;text-wrap:balance}
+.sub{color:var(--soft);margin:0 0 22px;font-size:16px}
+.stage{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(18px,3vw,40px);align-items:stretch}
+.womb{position:relative;background:var(--peach);border-radius:28px;aspect-ratio:1/1;max-height:520px;overflow:hidden}
+.womb svg{position:absolute;inset:0;width:100%;height:100%}
+.wk{position:absolute;left:24px;top:18px;font:400 clamp(56px,8vw,96px)/1 "Gowun Dodum",sans-serif;color:var(--coral);font-variant-numeric:tabular-nums}
+.wk small{font-size:.32em;color:var(--ink);margin-left:6px}
+.tri{position:absolute;left:26px;bottom:20px;font-size:15px;color:var(--ink);background:var(--card);padding:6px 12px;border-radius:99px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:clamp(22px,3vw,36px);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.when{color:var(--coral);font-weight:700;font-size:17px;white-space:nowrap}
+.card h2{font:400 clamp(28px,3.4vw,40px)/1.15 "Gowun Dodum",sans-serif;margin:6px 0 16px;letter-spacing:-.01em}
+.card ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.card li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:17px}
+.card li b{font-weight:600}
+.dot{width:28px;height:28px;border-radius:50%;background:var(--peach2);color:var(--coral);display:grid;place-items:center;font-weight:700;font-size:14px}
+.tag{margin-top:auto;padding-top:18px;font-size:15px;color:var(--soft)}
+.tag span{background:var(--sage);color:var(--ink);padding:4px 10px;border-radius:99px;margin-right:6px;white-space:nowrap}
+.inner{transition:opacity .45s ease,transform .45s ease;display:flex;flex-direction:column;height:100%}
+.inner.out{opacity:0;transform:translateY(10px)}
+.ribbon{margin-top:28px}
+.track{position:relative;height:64px}
+.bands{position:absolute;left:0;right:0;top:22px;height:20px;display:flex;border-radius:99px;overflow:hidden}
+.bands div{height:100%}
+.fill{position:absolute;left:0;top:22px;height:20px;border-radius:99px;background:var(--coral);opacity:.9;width:0}
+.stop{position:absolute;top:16px;width:32px;height:32px;margin-left:-16px;border-radius:50%;border:3px solid var(--bg);background:var(--card);box-shadow:0 0 0 2px var(--coral);cursor:pointer;padding:0;color:var(--coral);font:700 12px/1 "IBM Plex Sans KR",sans-serif}
+.stop.on{background:var(--coral);color:#fff}
+.stop:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.axis{position:relative;height:22px;font-size:13px;color:var(--soft)}
+.axis span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:15px;margin-top:10px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;align-items:center}
+.btn{min-height:44px;padding:0 18px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 16px "IBM Plex Sans KR",sans-serif;cursor:pointer}
+.btn.main{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn:hover{border-color:var(--coral)}
+.prog{flex:1 1 160px;height:6px;background:var(--line);border-radius:9px;overflow:hidden}
+.prog div{height:100%;width:0;background:var(--coral)}
+.after{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px;margin-top:8px}
+.box{border-radius:22px;padding:22px 24px}
+.box h3{font:400 24px/1.2 "Gowun Dodum",sans-serif;margin:0 0 10px}
+.box ul{margin:0;padding-left:20px}
+.warn{background:var(--peach)}
+.money{background:var(--sage)}
+.big{font:400 clamp(40px,6vw,60px)/1 "Gowun Dodum",sans-serif;color:var(--ink)}
+.note{font-size:14px;color:var(--soft);margin-top:22px}
+@media(max-width:760px){.stage{grid-template-columns:minmax(0,1fr)}.womb{aspect-ratio:4/3}}
+@media(max-width:520px){.axis span.minor{display:none}.stop{width:26px;height:26px;margin-left:-13px;top:19px;font-size:11px}.card li{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.inner{transition:none}}
+</style>
+</head>
+<body>
+<section class="band">
+<div class="wrap">
+<h1>임신 40주, 주수별로 받는 검사</h1>
+<p class="sub">정상 임신 기준의 일반적인 일정이에요. 정확한 시기는 다니는 병원 안내를 따르세요.</p>
+
+<div class="stage">
+  <div class="womb" aria-hidden="true">
+    <svg id="art" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="g1" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffb4a6"/><stop offset="1" stop-color="#ef5f52"/></radialGradient>
+        <radialGradient id="g0" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff5f1"/><stop offset="1" stop-color="#ffd2c4"/></radialGradient>
+      </defs>
+      <circle cx="215" cy="215" r="150" fill="url(#g0)"/>
+      <circle id="ring" cx="215" cy="215" r="150" fill="none" stroke="#ef5f52" stroke-width="3" stroke-dasharray="942" stroke-dashoffset="942" transform="rotate(-90 215 215)" stroke-linecap="round"/>
+      <g id="baby" transform="translate(215 215) scale(.3)">
+        <ellipse cx="0" cy="118" rx="95" ry="14" fill="#ef5f52" opacity=".12"/>
+        <path d="M-10 -20 C 60 -30, 95 30, 70 80 C 50 115, -10 120, -45 95 C -70 75, -70 40, -50 20 Z" fill="url(#g1)"/>
+        <circle cx="-25" cy="-45" r="52" fill="url(#g1)"/>
+        <path d="M-50 -70 C -40 -90, -10 -95, 5 -85" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".55"/>
+        <path d="M-5 30 C 15 45, 30 45, 38 30" stroke="#c8463b" stroke-width="10" fill="none" stroke-linecap="round"/>
+        <path d="M20 90 C 0 100, -25 95, -30 82" stroke="#c8463b" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <circle cx="-45" cy="-42" r="5" fill="#8a2f28"/>
+        <circle id="heart" cx="12" cy="20" r="9" fill="#fff" opacity="0"/>
+      </g>
+    </svg>
+    <div class="wk"><span id="wkn">5</span><small>주</small></div>
+    <div class="tri" id="tri">임신 초기</div>
+  </div>
+
+  <div class="card" aria-live="polite"><div class="inner" id="inner"></div></div>
+</div>
+
+<div class="ribbon">
+  <div class="track" id="track">
+    <div class="bands" id="bands"></div>
+    <div class="fill" id="fill"></div>
+  </div>
+  <div class="axis" id="axis"></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<div class="ctrl">
+  <button class="btn" id="prev" type="button">이전</button>
+  <button class="btn main" id="play" type="button">일시정지</button>
+  <button class="btn" id="next" type="button">다음</button>
+  <div class="prog" aria-hidden="true"><div id="pbar"></div></div>
+</div>
+</div>
+</section>
+
+<section class="band" style="padding-top:0">
+<div class="wrap after">
+  <div class="box warn">
+    <h3>이럴 땐 예약 기다리지 말고 바로 병원으로</h3>
+    <ul>
+      <li>출혈이 많거나 배가 심하게 아플 때</li>
+      <li>37주 전에 규칙적인 배뭉침이 반복될 때</li>
+      <li>임신 후기에 태동이 눈에 띄게 줄었을 때</li>
+      <li>심한 두통, 눈앞이 흐림, 갑자기 심하게 부을 때</li>
+    </ul>
+  </div>
+  <div class="box money">
+    <h3>검사비 지원 · 국민행복카드</h3>
+    <div class="big">100만 원</div>
+    <p style="margin:8px 0 0">임신 1회당 지원(다태아는 태아당 100만 원, 분만취약지 20만 원 추가). 분만예정일·출산일부터 2년 안에 사용해요. 임신 확인서를 받으면 바로 신청하세요.</p>
+  </div>
+</div>
+<p class="wrap note">2026년 11월 기준 공개 자료(국민건강보험공단, 임신육아종합포털 아이사랑 등)를 바탕으로 정리했어요. 실제 검사 항목과 시기는 담당 의사의 판단이 우선입니다.</p>
+</section>
+
+<script>
+{
+const S=[
+ {w:[5,8],t:"첫 산전 방문",c:"임신 확인",items:[["초음파","태낭·심장박동 확인, 예정일 계산, 자궁 밖 임신 여부"],["기본 혈액검사","혈액형, 빈혈, 풍진 항체, B형간염, 매독·HIV"],["소변·자궁경부암 검사","감염과 기본 건강 상태 확인"]],tag:["국민행복카드 신청"]},
+ {w:[10,13],t:"NIPT",c:"선택 검사",items:[["산모 혈액으로 검사","혈액 속 태아 DNA로 염색체 이상 위험을 선별"],["비급여","비용이 커서 주치의와 상의 후 결정"]],tag:["선택"]},
+ {w:[11,14],t:"목덜미투명대(NT)",c:"1차 기형아 검사",items:[["NT 초음파","목 뒤 두께 측정, 두꺼우면 추가 검사 고려"],["1차 혈액검사","다운증후군 등 위험도 계산"]],tag:["11주~13주 6일"]},
+ {w:[15,20],t:"2차 기형아 검사",c:"쿼드 검사",items:[["혈액검사","다운증후군, 신경관 결손 위험도 평가"],["양수검사 (필요 시)","35세 이상, 선별검사 이상 소견 등일 때 고려"]],tag:["필요한 경우만 양수검사"]},
+ {w:[20,24],t:"정밀초음파",c:"구조 확인",items:[["태아 장기·구조","뇌, 심장, 척추, 팔다리 등을 자세히 확인"],["태반·양수","위치와 양을 함께 봄"]],tag:["임신 중기"]},
+ {w:[24,28],t:"임신성 당뇨 검사",c:"당 부하 검사",items:[["당 선별검사","포도당 음료를 마시고 혈당 측정"],["빈혈 재검","철분 보충이 필요한지 확인"]],tag:["대부분 모든 산모"]},
+ {w:[27,36],t:"백일해 예방접종",c:"Tdap",items:[["산모 접종","태어난 아기를 백일해로부터 보호"],["보건소 지원","무료 접종하는 지자체가 있으니 확인"]],tag:["27~36주 권장"]},
+ {w:[28,36],t:"후기 정기검진",c:"2주마다",items:[["혈압·소변","임신중독증(단백뇨, 고혈압) 조기 발견"],["성장 초음파","태아 크기, 태반 위치, 양수량 확인"]],tag:["2주에 한 번"]},
+ {w:[35,37],t:"GBS 검사",c:"병원에 따라",items:[["B군 연쇄상구균","분만 중 아기에게 옮을 수 있는 균 확인"],["양성이면","분만 때 항생제로 예방"]],tag:["병원마다 다름"]},
+ {w:[36,40],t:"막달 검사",c:"매주 방문",items:[["막달 혈액검사","빈혈 등 분만 전 상태 확인"],["심전도·흉부 X선","분만·마취 준비"],["태동검사(NST)","아기 심박과 움직임 확인"]],tag:["매주 한 번"]}
+];
+const R=[{a:0,b:28,c:"var(--sage)",n:"28주까지 4주마다"},{a:28,b:36,c:"var(--sage2)",n:"36주까지 2주마다"},{a:36,b:40,c:"var(--sage3)",n:"그 뒤로 매주"}];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const pct=w=>(w/40*100)+"%";
+$("bands").innerHTML=R.map(r=>`<div style="width:${(r.b-r.a)/40*100}%;background:${r.c}"></div>`).join('');
+$("legend").innerHTML='<span><i style="background:var(--coral)"></i>지금 보는 시기</span>'+R.map(r=>`<span><i style="background:${r.c}"></i>${esc(r.n)}</span>`).join('');
+$("axis").innerHTML=[0,4,8,12,16,20,24,28,32,36,40].map(w=>`<span class="${w%8?'minor':''}" style="left:${pct(w)}">${w}주</span>`).join('');
+$("track").insertAdjacentHTML('beforeend',S.map((s,i)=>`<button class="stop" type="button" data-i="${i}" style="left:${pct(s.w[0])}" aria-label="${esc(s.w[0]+'주 '+s.t)}">${i+1}</button>`).join(''));
+const stops=[...document.querySelectorAll('.stop')];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const DUR=5200;
+let idx=0,t0=performance.now(),playing=!reduce,curW=5,elapsed=0;
+function tri(w){return w<14?"임신 초기":w<28?"임신 중기":"임신 후기"}
+function render(i){
+  const s=S[i],el=$("inner");
+  el.classList.add('out');
+  setTimeout(()=>{
+    el.innerHTML=`<div class="when">${s.w[0]}~${s.w[1]}주 · ${esc(s.c)}</div><h2>${esc(s.t)}</h2><ul>${s.items.map((it,k)=>`<li><span class="dot">${k+1}</span><span><b>${esc(it[0])}</b><br>${esc(it[1])}</span></li>`).join('')}</ul><div class="tag">${s.tag.map(x=>`<span>${esc(x)}</span>`).join('')}</div>`;
+    el.classList.remove('out');
+  },reduce?0:260);
+  stops.forEach((b,k)=>b.classList.toggle('on',k===i));
+}
+function go(i){idx=(i+S.length)%S.length;t0=performance.now();elapsed=0;render(idx);if(reduce)setWeek(S[idx].w[0])}
+function setWeek(w){
+  curW=w;
+  $("wkn").textContent=Math.round(w);
+  $("tri").textContent=tri(w);
+  $("fill").style.width=pct(w);
+  const sc=.22+.78*(w/40);
+  $("baby").setAttribute('transform',`translate(215 ${230-20*sc}) scale(${sc.toFixed(3)})`);
+  $("ring").setAttribute('stroke-dashoffset',(942*(1-w/40)).toFixed(1));
+}
+function tick(now){
+  if(playing){
+    elapsed=now-t0;
+    const s=S[idx],k=Math.min(1,elapsed/DUR);
+    const e=k<.5?2*k*k:1-((-2*k+2)**2)/2;
+    setWeek(s.w[0]+(s.w[1]-s.w[0])*e);
+    $("pbar").style.width=((idx+k)/S.length*100)+"%";
+    if(elapsed>=DUR)go(idx+1);
+  }
+  const h=$("heart");
+  if(curW>=6&&!reduce){h.setAttribute('opacity',(.25+.5*Math.abs(Math.sin(now/260))).toFixed(2))}else h.setAttribute('opacity',curW>=6?'.6':'0');
+  requestAnimationFrame(tick);
+}
+$("play").addEventListener('click',()=>{playing=!playing;$("play").textContent=playing?"일시정지":"재생";if(playing)t0=performance.now()-elapsed});
+$("prev").addEventListener('click',()=>{go(idx-1);if(!playing){setWeek(S[idx].w[0]);$("pbar").style.width=(idx/S.length*100)+"%"}});
+$("next").addEventListener('click',()=>{go(idx+1);if(!playing){setWeek(S[idx].w[0]);$("pbar").style.width=(idx/S.length*100)+"%"}});
+stops.forEach(b=>b.addEventListener('click',()=>{go(+b.dataset.i);if(!playing){setWeek(S[idx].w[0])}}));
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')$("next").click();if(e.key==='ArrowLeft')$("prev").click()});
+if(reduce){$("play").textContent="재생"}
+render(0);setWeek(5);requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
